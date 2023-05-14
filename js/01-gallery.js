@@ -1,5 +1,3 @@
-import { galleryItems } from "./gallery-items.js";
-
 const gallery = document.querySelector(".gallery");
 
 const createGalleryItem = ({ preview, original, description }) => `
@@ -13,11 +11,30 @@ gallery.insertAdjacentHTML(
   galleryItems.map(createGalleryItem).join("")
 );
 
-const galleryItemsElements = gallery.querySelectorAll(".gallery__item");
+gallery.addEventListener("click", (event) => {
+  event.preventDefault();
+  const clickedElement = event.target;
 
-galleryItemsElements.forEach((item) => {
-  item.addEventListener("click", (event) => {
-    event.preventDefault();
-    basicLightbox.create(`<img src="${event.target.src}">`).show();
-  });
+  if (
+    clickedElement.tagName !== "IMG" ||
+    !clickedElement.src.endsWith(".png")
+  ) {
+    return;
+  }
+
+  const galleryItem = clickedElement.closest(".gallery__item");
+
+  basicLightbox
+    .create(`<img src="${clickedElement.src}" alt="${clickedElement.alt}">`, {
+      onShow: (instance) => {
+        setTimeout(() => {
+          const imageElement = instance.element().querySelector("img");
+          const captionElement = document.createElement("div");
+          captionElement.classList.add("caption");
+          captionElement.textContent = imageElement.alt;
+          instance.element().appendChild(captionElement);
+        }, 250);
+      },
+    })
+    .show();
 });
