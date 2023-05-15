@@ -1,3 +1,5 @@
+import { galleryItems } from "./gallery-items.js";
+
 const gallery = document.querySelector(".gallery");
 
 const createGalleryItem = ({ preview, original, description }) => `
@@ -13,28 +15,10 @@ gallery.insertAdjacentHTML(
 
 gallery.addEventListener("click", (event) => {
   event.preventDefault();
-  const clickedElement = event.target;
-
-  if (
-    clickedElement.tagName !== "IMG" ||
-    !clickedElement.src.endsWith(".png")
-  ) {
-    return;
-  }
-
-  const galleryItem = clickedElement.closest(".gallery__item");
-
-  basicLightbox
-    .create(`<img src="${clickedElement.src}" alt="${clickedElement.alt}">`, {
-      onShow: (instance) => {
-        setTimeout(() => {
-          const imageElement = instance.element().querySelector("img");
-          const captionElement = document.createElement("div");
-          captionElement.classList.add("caption");
-          captionElement.textContent = imageElement.alt;
-          instance.element().appendChild(captionElement);
-        }, 250);
-      },
-    })
-    .show();
+  const clickedItem = event.target.closest(".gallery__item");
+  if (!clickedItem) return;
+  const imgSrc = clickedItem
+    .querySelector(".gallery__image")
+    .getAttribute("src");
+  basicLightbox.create(`<img src="${imgSrc}">`).show();
 });
